@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown 💫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF6EE;
+    --cream-2:#FFEFE0;
+    --lavender:#CBB8EC;
+    --coral:#FF9080;
+    --coral-deep:#FF6F5E;
+    --mint:#A7E6CF;
+    --plum:#4A3B5C;
+    --plum-soft:#7B6A93;
+    --card-bg:#FFFFFF;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --cream:#241C30;
+      --cream-2:#2C2238;
+      --card-bg:#2E2440;
+      --plum:#F5EEFF;
+      --plum-soft:#C6B8DC;
+    }
+  }
+  :root[data-theme="dark"]{
+    --cream:#241C30;
+    --cream-2:#2C2238;
+    --card-bg:#2E2440;
+    --plum:#F5EEFF;
+    --plum-soft:#C6B8DC;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 20%, var(--lavender) 0%, transparent 40%),
+      radial-gradient(circle at 85% 75%, var(--mint) 0%, transparent 35%),
+      linear-gradient(160deg, var(--cream) 0%, var(--cream-2) 100%);
+    font-family:'Quicksand', sans-serif;
+    color:var(--plum);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  .sky-deco{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+  }
+  .puff{
+    position:absolute;
+    border-radius:50%;
+    opacity:0.55;
+    filter:blur(1px);
+    animation:drift 22s ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%,100%{ transform:translateY(0) translateX(0); }
+    50%{ transform:translateY(-18px) translateX(14px); }
+  }
+
+  .card{
+    position:relative;
+    z-index:1;
+    background:var(--card-bg);
+    border-radius:32px;
+    padding:48px 40px 40px;
+    max-width:440px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 20px 60px rgba(120,90,150,0.18);
+    border:3px solid rgba(255,255,255,0.6);
+  }
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:linear-gradient(135deg, var(--lavender), var(--coral));
+    color:white;
+    font-family:'Fredoka', sans-serif;
+    font-weight:500;
+    font-size:0.85rem;
+    padding:8px 18px;
+    border-radius:999px;
+    margin-bottom:18px;
+  }
+  .badge .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:white;
+    animation:pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1; transform:scale(1);}
+    50%{opacity:0.4; transform:scale(0.7);}
+  }
+
+  h1{
+    font-family:'Fredoka', sans-serif;
+    font-weight:600;
+    font-size:1.5rem;
+    margin:0 0 6px;
+    line-height:1.3;
+  }
+  .subtitle{
+    color:var(--plum-soft);
+    font-size:0.95rem;
+    margin:0 0 30px;
+  }
+
+  .timer-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .unit{
+    background:linear-gradient(160deg, var(--cream), var(--cream-2));
+    border-radius:18px;
+    padding:14px 4px;
+    position:relative;
+  }
+  .unit .num{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:2.1rem;
+    display:block;
+    line-height:1;
+    color:var(--coral-deep);
+    font-variant-numeric:tabular-nums;
+  }
+  .unit .label{
+    font-size:0.68rem;
+    text-transform:lowercase;
+    color:var(--plum-soft);
+    letter-spacing:0.02em;
+    margin-top:4px;
+    display:block;
+  }
+
+  .target-line{
+    margin-top:22px;
+    font-size:0.85rem;
+    color:var(--plum-soft);
+  }
+  .target-line strong{ color:var(--plum); }
+
+  /* Done state */
+  .done-wrap{ display:none; }
+  .done-wrap.show{ display:block; }
+  .timer-grid.hide{ display:none; }
+
+  .cake{
+    font-size:4rem;
+    margin:6px 0 10px;
+    display:inline-block;
+    animation:bounce 1.4s ease-in-out infinite;
+  }
+  @keyframes bounce{
+    0%,100%{ transform:translateY(0) rotate(-2deg); }
+    50%{ transform:translateY(-10px) rotate(2deg); }
+  }
+  .done-title{
+    font-family:'Fredoka', sans-serif;
+    font-weight:700;
+    font-size:1.6rem;
+    color:var(--coral-deep);
+    margin:0 0 4px;
+  }
+  .done-sub{
+    color:var(--plum-soft);
+    font-size:0.95rem;
+  }
+
+  .confetti-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:5;
+  }
+  .confetti{
+    position:absolute;
+    top:-10px;
+    border-radius:2px;
+    opacity:0.9;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(110vh) rotate(600deg); opacity:0.3; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .puff, .badge .dot, .cake{ animation:none !important; }
+    .confetti{ animation:none !important; display:none; }
+  }
+
+  @media (max-width:380px){
+    .unit .num{ font-size:1.6rem; }
+    .card{ padding:36px 22px 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="sky-deco" id="skyDeco"></div>
+
+<div class="card">
+  <div class="badge"><span class="dot"></span>Countdown läuft</div>
+  <h1>Bald kann ich dich küssen Bella! ✨</h1>
+  <p class="subtitle">Noch bis 20:00 Uhr heute, 16.09.2026 (Wien)</p>
+
+  <div class="timer-grid" id="timerGrid">
+    <div class="unit"><span class="num" id="days">00</span><span class="label">Tage</span></div>
+    <div class="unit"><span class="num" id="hours">00</span><span class="label">Std</span></div>
+    <div class="unit"><span class="num" id="minutes">00</span><span class="label">Min</span></div>
+    <div class="unit"><span class="num" id="seconds">00</span><span class="label">Sek</span></div>
+  </div>
+
+  <div class="target-line" id="targetLine">Ziel: <strong>16.09.2026, 20:00 Uhr</strong> (Europe/Vienna)</div>
+
+  <div class="done-wrap" id="doneWrap">
+    <div class="cake">🎉</div>
+    <p class="done-title">Es ist so weit!</p>
+    <p class="done-sub">Der Timer hat 20:00 Uhr erreicht.</p>
+  </div>
+</div>
+
+<div class="confetti-layer" id="confettiLayer"></div>
+
+<script>
+  // Target: 16.09.2026, 20:00 Uhr Wien-Zeit = 18:00 UTC (CEST, UTC+2 im September)
+  const target = new Date("2026-09-16T18:00:00Z").getTime();
+
+  const daysEl = document.getElementById('days');
+  const hoursEl = document.getElementById('hours');
+  const minutesEl = document.getElementById('minutes');
+  const secondsEl = document.getElementById('seconds');
+  const timerGrid = document.getElementById('timerGrid');
+  const doneWrap = document.getElementById('doneWrap');
+  const confettiLayer = document.getElementById('confettiLayer');
+
+  let celebrated = false;
+  const colors = ['#FF9080','#CBB8EC','#A7E6CF','#FFD3A5','#FF6F5E'];
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function spawnConfettiBurst(count){
+    for(let i=0;i<count;i++){
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const size = 6 + Math.random()*7;
+      c.style.width = size+'px';
+      c.style.height = (size*0.4)+'px';
+      c.style.left = (Math.random()*100)+'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      const duration = 3 + Math.random()*2.5;
+      c.style.animationDuration = duration+'s';
+      c.style.animationDelay = (Math.random()*1.5)+'s';
+      confettiLayer.appendChild(c);
+      setTimeout(()=>c.remove(), (duration+2)*1000);
+    }
+  }
+
+  function celebrate(){
+    if(celebrated) return;
+    celebrated = true;
+    timerGrid.classList.add('hide');
+    doneWrap.classList.add('show');
+    spawnConfettiBurst(120);
+    const interval = setInterval(()=>spawnConfettiBurst(40), 2500);
+    setTimeout(()=>clearInterval(interval), 20000);
+  }
+
+  function tick(){
+    const now = Date.now();
+    const diff = target - now;
+
+    if(diff <= 0){
+      daysEl.textContent = '00';
+      hoursEl.textContent = '00';
+      minutesEl.textContent = '00';
+      secondsEl.textContent = '00';
+      celebrate();
+      return;
+    }
+
+    const totalSeconds = Math.floor(diff/1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    daysEl.textContent = pad(days);
+    hoursEl.textContent = pad(hours);
+    minutesEl.textContent = pad(minutes);
+    secondsEl.textContent = pad(seconds);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  // dekorative Wolken/Puffs
+  const deco = document.getElementById('skyDeco');
+  const puffColors = ['#CBB8EC','#A7E6CF','#FF9080','#FFD3A5'];
+  for(let i=0;i<7;i++){
+    const p = document.createElement('div');
+    p.className = 'puff';
+    const size = 60 + Math.random()*120;
+    p.style.width = size+'px';
+    p.style.height = size+'px';
+    p.style.left = (Math.random()*100)+'vw';
+    p.style.top = (Math.random()*100)+'vh';
+    p.style.background = puffColors[i % puffColors.length];
+    p.style.animationDuration = (18 + Math.random()*10)+'s';
+    p.style.animationDelay = (Math.random()*6)+'s';
+    deco.appendChild(p);
+  }
+</script>
+
+</body>
+</html>
